@@ -1,3 +1,57 @@
-* { 
-	font-family: sans-serif;
+@import url('https://fonts.googleapis.com/css2?family=Comic+Relief:wght@400;700&display=swap');
+
+body {
+	background-color: #333;
+	color: #f0f4ef;
 }
+
+.container {
+	max-width: 800px;
+	margin: 0 auto;
+
+	display: flex;
+	flex-flow: column nowrap;
+
+	padding: 0;
+}
+
+.pageTitle {
+	margin-bottom: 0;	
+}
+
+.arrowsContainer {
+	padding: 0;
+	margin-top: 0;
+	gap: 1rem;
+
+	display: flex;	
+	flex-flow: row nowrap;
+	
+
+	list-style: none;
+	font-size: 2rem;
+}
+
+.arrowsContainer > li {
+	cursor: pointer;
+}
+
+.searchContainer{
+	display: flex;	
+	flex-flow: column nowrap;
+}
+
+/* Imports */
+
+.comic-relief-regular {
+  font-family: "Comic Relief", system-ui;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.comic-relief-bold {
+  font-family: "Comic Relief", system-ui;
+  font-weight: 700;
+  font-style: normal;
+}
+
