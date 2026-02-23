@@ -9,16 +9,9 @@ function initialize() {
 	const body = document.querySelector('body');
 	const searchBar = document.querySelector("#item-name");
 
-	body.addEventListener('keydown', e => {
-		switch(e.key){
-			case 'l':
-				searchBarEvent(searchState);
-				break;
-			case 'h':
-				console.warn("WIP");
-				break;
-		}
-	}) 
+	document.querySelector('.right-arrow').addEventListener('click', e =>{
+		searchBarEvent(searchState)
+	});
 
 	searchBar.addEventListener('keydown', event => {
 		const input = searchBar.value.toLowerCase().trim();
@@ -29,8 +22,8 @@ function initialize() {
 	})
 }
 
+async function searchBarBackwards(searchState) {}
 async function searchBarEvent(searchState) {
-	console.warn(searchState.oldPointer);
 	if(!searchState.item) return false;
 
 	let ITEM_SEARCH_URL = !searchState.pointer
@@ -41,21 +34,42 @@ async function searchBarEvent(searchState) {
 	if(!_fetchItemResponse.ok) return false;
 
 	const fetchItemResponse = await _fetchItemResponse.json();
+	paintItemsOnScreen(fetchItemResponse);
 
-	if(searchState.paging && !fetchItemResponse.next){
-		searchState.pointer = false;
-		searchState.paging = false;
+	searchState.pointer = fetchItemResponse.next || false;
+	searchState.oldPointer = searchState.pointer;
+	searchState.paging = true;
+
+	if(!searchState.pointer) {
 		searchState.item = false;
+		searchState.paging = false;
 		document.querySelector("#item-name").value = '';
 
 		return false;
 	}
+}
 
-	searchState.pointer = fetchItemResponse.next || false;
-	searchState.oldPointer = searchState.pointer;
+function paintItemsOnScreen(items) {
+	console.warn(items.results)
+	const pagination = document.createElement("section");
+	const hr = document.createElement("hr");
+	
+	items.results.forEach(item => {
+		const itemSection = document.createElement("article");
+		const itemName = document.createElement("span");
+		const itemID = document.createElement("span");
 
-	console.log(searchState.pointer);
-	searchState.paging = true;
+		itemName.textContent = `ITEM = ${item.fields.Name}\t` 
+		itemID.textContent = `ID = ${item.row_id}` 
+
+		itemSection.appendChild(itemName);
+		itemSection.appendChild(itemID);
+
+		pagination.appendChild(itemSection);
+	})
+
+	document.querySelector('.items-container').appendChild(hr);
+	document.querySelector('.items-container').appendChild(pagination);
 }
 
 (function(){
