@@ -21,18 +21,20 @@ function initialize() {
 	}) 
 
 	searchBar.addEventListener('keydown', event => {
-		if (event.key === 'Enter'){
-			searchState.item = searchBar.value.toLowerCase();
+		const input = searchBar.value.toLowerCase().trim();
+		if (event.key === 'Enter' && input){
+			searchState.item = input;
 			searchBarEvent(searchState);
 		}
 	})
 }
 
 async function searchBarEvent(searchState) {
+	console.warn(searchState.oldPointer);
+	if(!searchState.item) return false;
 
-	const possibleItem = searchState.item;	
 	let ITEM_SEARCH_URL = !searchState.pointer
-	? `https://v2.xivapi.com/api/search?sheets=Item&query=Name~"${possibleItem}"&limit=10`
+	? `https://v2.xivapi.com/api/search?sheets=Item&query=Name~"${searchState.item}"&limit=10`
 	: `https://v2.xivapi.com/api/search?cursor=${searchState.pointer}&limit=10`
 
 	const _fetchItemResponse = await fetch(ITEM_SEARCH_URL);
@@ -41,13 +43,19 @@ async function searchBarEvent(searchState) {
 	const fetchItemResponse = await _fetchItemResponse.json();
 
 	if(searchState.paging && !fetchItemResponse.next){
-		console.warn('SHOULD END')
+		searchState.pointer = false;
+		searchState.paging = false;
+		searchState.item = false;
+		document.querySelector("#item-name").value = '';
+
+		return false;
 	}
 
 	searchState.pointer = fetchItemResponse.next || false;
-	searchState.paging = true;
+	searchState.oldPointer = searchState.pointer;
 
-	console.warn("new pointer:", searchState.pointer);
+	console.log(searchState.pointer);
+	searchState.paging = true;
 }
 
 (function(){
