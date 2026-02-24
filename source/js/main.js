@@ -97,9 +97,8 @@ function paintItemsOnScreen(items) {
 		itemDetails.appendChild(itemName);
 		pagination.appendChild(itemDetails);
 
-		itemDetails.addEventListener("toggle", (e) =>
-			handleRecipeID(item, itemDetails),
-		);
+		itemDetails.addEventListener('toggle', e => handleRecipeID(item, itemDetails));
+		
 	});
 
 	document.querySelector(".items-container").appendChild(hr);
@@ -109,6 +108,8 @@ function paintItemsOnScreen(items) {
 
 async function handleRecipeID(item, section) {
 	if (!section.open) return false;
+	if(Array.from(section.childNodes).find(el => el.tagName === "UL"))
+		return false;
 
 	const BASE_URL = `https://v2.xivapi.com/api/search?sheets=Recipe&query=ItemResult=${item.row_id}`;
 	const _fetchRecipeID = await fetch(BASE_URL);
@@ -120,7 +121,17 @@ async function handleRecipeID(item, section) {
 	if (!fetchRecipeID.results.length >= 1) return false;
 
 	const RECIPE_ID = fetchRecipeID.results[0].row_id;
-	gatherRecipe(RECIPE_ID);
+	const recipes =	await gatherRecipe(RECIPE_ID);
+
+	// Creating Elements
+	const list = document.createElement('ul');
+	recipes.forEach(recipe => {
+		const item = document.createElement('li');
+		item.textContent = `${recipe.qnt}x\t\t${recipe.ing.fields.Name}`
+		list.append(item);
+	})
+
+	section.append(list);
 }
 
 async function gatherRecipe(RECIPE_ID) {
@@ -130,11 +141,16 @@ async function gatherRecipe(RECIPE_ID) {
 	if (!_fetchRecipe.ok) return false;
 
 	const recipe = await _fetchRecipe.json();
+	const recipeElements = [];
 
-	recipe.fields.Ingredient.forEach(ingredient => {
-		ingredient.fields.Name
-		ingredient.fields.Description
-	})
+	for(let index = 0; index < recipe.fields.AmountIngredient.length; index++){
+		recipeElements.push({
+			qnt: recipe.fields.AmountIngredient[index],
+			ing: recipe.fields.Ingredient[index]
+		})
+	}
+
+	return recipeElements;
 }
 
 (function() {
