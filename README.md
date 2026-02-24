@@ -7,7 +7,7 @@
 ## Milestones / Objectives
 
 - [x] Item Search;
-- [ ] Material Items (If Item's Craftable);
+- [x] Material Items (If Item's Craftable);
 - [ ] Save Item for later search;
 - [ ] Summarize it all into a simple spreadcheet / text. 
 
