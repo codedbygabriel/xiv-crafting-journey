@@ -1,43 +1,51 @@
 function initialize() {
 	const searchState = {
-		pointer : false,
-		oldPointer : false,
-		item : false,
-		paging: false
-	}
+		pointer: false,
+		oldPointer: false,
+		item: false,
+		currentSearch: false,
+		paging: false,
+	};
 
-	const body = document.querySelector('body');
+	const body = document.querySelector("body");
 	const searchBar = document.querySelector("#item-name");
-	const loadMoreItems = document.querySelector('.load-more-items');
-	const clearItems = document.querySelector('.clear-items');
-	
-	loadMoreItems.addEventListener('click', e =>{
-		searchBarEvent(searchState, loadMoreItems, clearItems)
+	const loadMoreItems = document.querySelector(".load-more-items");
+	const clearItems = document.querySelector(".clear-items");
+
+	loadMoreItems.addEventListener("click", (e) => {
+		searchBarEvent(searchState, loadMoreItems, clearItems);
 	});
 
-	clearItems.addEventListener('click', e => {
+	clearItems.addEventListener("click", (e) => {
 		clearSearch(searchState, loadMoreItems, true);
-	})
+	});
 
-	searchBar.addEventListener('keydown', event => {
+	searchBar.addEventListener("keydown", (event) => {
 		const input = searchBar.value.toLowerCase().trim();
-		if (event.key === 'Enter' && input){
+		if (event.key === "Enter" && input) {
 			searchState.item = input;
 			searchBarEvent(searchState, loadMoreItems, clearItems);
 		}
-	})
+	});
 }
 
-async function searchBarBackwards(searchState) {}
 async function searchBarEvent(searchState, loadMore, clearItems) {
-	if(!searchState.item) return false;
+	if (!searchState.item) return false;
+	if (
+		searchState.currentSearch &&
+		searchState.item !== searchState.currentSearch
+	) {
+		searchState.pointer = false;
+		searchState.oldPointer = false;
+		searchState.paging = false;
+	}
 
 	let ITEM_SEARCH_URL = !searchState.pointer
-	? `https://v2.xivapi.com/api/search?sheets=Item&query=Name~"${searchState.item}"&limit=10`
-	: `https://v2.xivapi.com/api/search?cursor=${searchState.pointer}&limit=10`
+		? `https://v2.xivapi.com/api/search?sheets=Item&query=Name~"${searchState.item}"&limit=10`
+		: `https://v2.xivapi.com/api/search?cursor=${searchState.pointer}&limit=10`;
 
 	const _fetchItemResponse = await fetch(ITEM_SEARCH_URL);
-	if(!_fetchItemResponse.ok) return false;
+	if (!_fetchItemResponse.ok) return false;
 
 	const fetchItemResponse = await _fetchItemResponse.json();
 	paintItemsOnScreen(fetchItemResponse);
@@ -46,60 +54,89 @@ async function searchBarEvent(searchState, loadMore, clearItems) {
 	searchState.oldPointer = searchState.pointer;
 	searchState.paging = true;
 
+	// Adding this up here just so it gets in if it's a single search...
+	clearItems.classList.remove("clear-items-hidden");
+
 	// If there's no pointer, it'll fall on this condition
-	if(!searchState.pointer) {
+	if (!searchState.pointer) {
 		clearSearch(searchState, loadMore);
 		return false;
-		// searchState.item = false;
-		// searchState.paging = false;
-		// document.querySelector("#item-name").value = '';
-		// loadMore.classList.add('load-more-items-hidden');
 	}
 
 	// Else, if there's a pointer tho...
-	loadMore.classList.remove('load-more-items-hidden');
-	clearItems.classList.remove('clear-items-hidden');
-}
+	loadMore.classList.remove("load-more-items-hidden");
 
-function paintItemsOnScreen(items) {
-	if (!items.results.length > 0) 
-		return false;
-
-	const pagination = document.createElement("section");
-	const hr = document.createElement("hr");
-	
-	items.results.forEach(item => {
-		const itemSection = document.createElement("article");
-		const itemName = document.createElement("span");
-		const itemID = document.createElement("span");
-
-		itemName.textContent = `ITEM = ${item.fields.Name}\t` 
-		itemID.textContent = `ID = ${item.row_id}` 
-
-		itemSection.appendChild(itemName);
-		itemSection.appendChild(itemID);
-
-		pagination.appendChild(itemSection);
-	})
-
-	document.querySelector('.items-container').appendChild(hr);
-	document.querySelector('.items-container').appendChild(pagination);
-	pagination.scrollIntoView({behavior: 'smooth'});
+	// Sets currentSearch
+	searchState.currentSearch = searchState.item;
 }
 
 function clearSearch(searchState, loadMore, clearItems = false) {
 	if (clearItems) {
-		document.querySelector('.items-container').innerHTML = '';
-		document.querySelector('.clear-items').classList.add('clear-items-hidden');
+		document.querySelector(".items-container").innerHTML = "";
+		document.querySelector(".clear-items").classList.add("clear-items-hidden");
 	}
-	
 
-	document.querySelector("#item-name").value = '';
+	document.querySelector("#item-name").value = "";
 	searchState.item = false;
 	searchState.paging = false;
-	loadMore.classList.add('load-more-items-hidden');
+	loadMore.classList.add("load-more-items-hidden");
 }
 
-(function(){
+function paintItemsOnScreen(items) {
+	if (!items.results.length > 0) return false;
+
+	const pagination = document.createElement("section");
+	const hr = document.createElement("hr");
+
+	items.results.forEach((item) => {
+		const itemDetails = document.createElement("details");
+		const itemName = document.createElement("summary");
+
+		itemName.textContent = `${item.fields.Name} (${item.row_id})`;
+
+		itemDetails.appendChild(itemName);
+		pagination.appendChild(itemDetails);
+
+		itemDetails.addEventListener("toggle", (e) =>
+			handleRecipeID(item, itemDetails),
+		);
+	});
+
+	document.querySelector(".items-container").appendChild(hr);
+	document.querySelector(".items-container").appendChild(pagination);
+	pagination.scrollIntoView({ behavior: "smooth" });
+}
+
+async function handleRecipeID(item, section) {
+	if (!section.open) return false;
+
+	const BASE_URL = `https://v2.xivapi.com/api/search?sheets=Recipe&query=ItemResult=${item.row_id}`;
+	const _fetchRecipeID = await fetch(BASE_URL);
+
+	if (!_fetchRecipeID.ok) return false;
+
+	const fetchRecipeID = await _fetchRecipeID.json();
+
+	if (!fetchRecipeID.results.length >= 1) return false;
+
+	const RECIPE_ID = fetchRecipeID.results[0].row_id;
+	gatherRecipe(RECIPE_ID);
+}
+
+async function gatherRecipe(RECIPE_ID) {
+	const SEARCH_COMPONENTS = `https://v2.xivapi.com/api/sheet/Recipe/${RECIPE_ID}?fields=AmountIngredient,Ingredient,CanHq`;
+	const _fetchRecipe = await fetch(SEARCH_COMPONENTS);
+
+	if (!_fetchRecipe.ok) return false;
+
+	const recipe = await _fetchRecipe.json();
+
+	recipe.fields.Ingredient.forEach(ingredient => {
+		ingredient.fields.Name
+		ingredient.fields.Description
+	})
+}
+
+(function() {
 	initialize();
 })();
