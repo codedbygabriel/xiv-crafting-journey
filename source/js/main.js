@@ -144,6 +144,9 @@ async function gatherRecipe(RECIPE_ID) {
 	const recipeElements = [];
 
 	for(let index = 0; index < recipe.fields.AmountIngredient.length; index++){
+		if (!recipe.fields.AmountIngredient[index] >= 1)
+			continue;
+
 		recipeElements.push({
 			qnt: recipe.fields.AmountIngredient[index],
 			ing: recipe.fields.Ingredient[index]
