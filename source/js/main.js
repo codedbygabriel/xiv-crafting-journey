@@ -8,22 +8,28 @@ function initialize() {
 
 	const body = document.querySelector('body');
 	const searchBar = document.querySelector("#item-name");
-
-	document.querySelector('.right-arrow').addEventListener('click', e =>{
-		searchBarEvent(searchState)
+	const loadMoreItems = document.querySelector('.load-more-items');
+	const clearItems = document.querySelector('.clear-items');
+	
+	loadMoreItems.addEventListener('click', e =>{
+		searchBarEvent(searchState, loadMoreItems, clearItems)
 	});
+
+	clearItems.addEventListener('click', e => {
+		clearSearch(searchState, loadMoreItems, true);
+	})
 
 	searchBar.addEventListener('keydown', event => {
 		const input = searchBar.value.toLowerCase().trim();
 		if (event.key === 'Enter' && input){
 			searchState.item = input;
-			searchBarEvent(searchState);
+			searchBarEvent(searchState, loadMoreItems, clearItems);
 		}
 	})
 }
 
 async function searchBarBackwards(searchState) {}
-async function searchBarEvent(searchState) {
+async function searchBarEvent(searchState, loadMore, clearItems) {
 	if(!searchState.item) return false;
 
 	let ITEM_SEARCH_URL = !searchState.pointer
@@ -40,17 +46,25 @@ async function searchBarEvent(searchState) {
 	searchState.oldPointer = searchState.pointer;
 	searchState.paging = true;
 
+	// If there's no pointer, it'll fall on this condition
 	if(!searchState.pointer) {
-		searchState.item = false;
-		searchState.paging = false;
-		document.querySelector("#item-name").value = '';
-
+		clearSearch(searchState, loadMore);
 		return false;
+		// searchState.item = false;
+		// searchState.paging = false;
+		// document.querySelector("#item-name").value = '';
+		// loadMore.classList.add('load-more-items-hidden');
 	}
+
+	// Else, if there's a pointer tho...
+	loadMore.classList.remove('load-more-items-hidden');
+	clearItems.classList.remove('clear-items-hidden');
 }
 
 function paintItemsOnScreen(items) {
-	console.warn(items.results)
+	if (!items.results.length > 0) 
+		return false;
+
 	const pagination = document.createElement("section");
 	const hr = document.createElement("hr");
 	
@@ -70,6 +84,20 @@ function paintItemsOnScreen(items) {
 
 	document.querySelector('.items-container').appendChild(hr);
 	document.querySelector('.items-container').appendChild(pagination);
+	pagination.scrollIntoView({behavior: 'smooth'});
+}
+
+function clearSearch(searchState, loadMore, clearItems = false) {
+	if (clearItems) {
+		document.querySelector('.items-container').innerHTML = '';
+		document.querySelector('.clear-items').classList.add('clear-items-hidden');
+	}
+	
+
+	document.querySelector("#item-name").value = '';
+	searchState.item = false;
+	searchState.paging = false;
+	loadMore.classList.add('load-more-items-hidden');
 }
 
 (function(){
