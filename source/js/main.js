@@ -142,6 +142,8 @@ async function handleRecipeID(item, section) {
 
 	saveText.addEventListener("click", (e) => {
 		saveItem(item, recipes);
+		updateStorage(loadItems());
+		paintSavedItemsOnScreen(loadItems());
 	});
 
 	list.append(saveText);
@@ -171,8 +173,6 @@ function loadItems() {
 	const KEY = "xiv_items";
 	const data = JSON.parse(localStorage.getItem(KEY)) || [];
 
-	if (data.length <= 0) return false;
-
 	return data;
 }
 
@@ -182,6 +182,7 @@ function paintSavedItemsOnScreen(data, firstRun = false) {
 	const container = document.querySelector(".saved-items");
 	if (!firstRun) container.innerHTML = "";
 
+	console.log(data, "kkkkk");
 	data.forEach((_) => {
 		const itemDetails = document.createElement("details");
 		const itemName = document.createElement("summary");
