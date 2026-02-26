@@ -31,13 +31,11 @@ function initialize() {
 	});
 
 	switchPage.addEventListener("click", (event) => switchPageEvent());
-
 }
 
 function switchPageEvent() {
-	const pages = document.querySelectorAll('.page');
-	pages.forEach(page => page.classList.toggle('hidden-page'));
-	
+	const pages = document.querySelectorAll(".page");
+	pages.forEach((page) => page.classList.toggle("hidden-page"));
 }
 
 async function searchBarEvent(searchState, loadMore, clearItems) {
@@ -138,23 +136,23 @@ async function handleRecipeID(item, section) {
 	});
 
 	// Save button!
-	const saveText = document.createElement('li');
-	saveText.classList.add('saveText');
-	saveText.textContent = '[SAVE]';
+	const saveText = document.createElement("li");
+	saveText.classList.add("saveText");
+	saveText.textContent = "[SAVE]";
 
-	saveText.addEventListener('click', e => {
-		saveItem(item, recipes)
-	})
+	saveText.addEventListener("click", (e) => {
+		saveItem(item, recipes);
+	});
 
 	list.append(saveText);
 	section.append(list);
 }
 
-function saveItem(item, recipes){
-	const KEY = 'xiv_items';
+function saveItem(item, recipes) {
+	const KEY = "xiv_items";
 	const data = JSON.parse(localStorage.getItem(KEY)) || [];
 
-	data.push({item, recipes});
+	data.push({ item, recipes });
 	const LS_DATA = JSON.stringify(data);
 
 	localStorage.setItem(KEY, LS_DATA);
@@ -162,35 +160,43 @@ function saveItem(item, recipes){
 }
 
 function loadItems() {
-	const KEY = 'xiv_items';
+	const KEY = "xiv_items";
 	const data = JSON.parse(localStorage.getItem(KEY)) || [];
 
-	if(data.length <= 0)
-		return false;
+	if (data.length <= 0) return false;
 
 	return data;
 }
 
 function paintSavedItemsOnScreen(data) {
-	if (!(data.length >= 1))
-		console.warn('LOG = NO ITEMS SAVED AT LOCALSTORAGE, SKIPPING PAINTING PHASE.');
+	if (!(data.length >= 1)) console.warn("LOG = NO ITEMS SAVED AT LOCALSTORAGE, SKIPPING PAINTING PHASE.");
 
 	console.log(data);
 
-	const container = document.querySelector('.saved-items');
-	// if (container.childNodes.length >= 1) {} 
-	
-	data.forEach(_ => {
+	const container = document.querySelector(".saved-items");
 
+	data.forEach((_) => {
 		const itemDetails = document.createElement("details");
 		const itemName = document.createElement("summary");
+		const list = document.createElement("ul");
 
 		itemName.textContent = `${_.item.fields.Name} (${_.item.row_id})`;
 
 		itemDetails.appendChild(itemName);
-		container.appendChild(itemDetails);
 
-		// itemDetails.addEventListener("toggle", (e) => handleRecipeID(item, itemDetails));
+		itemDetails.addEventListener("toggle", (event) => {
+			if(list.childNodes.length >= 1)
+				return false;
+
+			_.recipes.forEach((recipe) => {
+				const item = document.createElement("li");
+				item.textContent = `${recipe.qnt}x\t\t${recipe.ing.fields.Name}`;
+				list.append(item);
+			});
+		});
+
+		itemDetails.appendChild(list);
+		container.appendChild(itemDetails);
 	});
 }
 
