@@ -1,52 +1,53 @@
 :root {
-    --black: #282828;
-    --darkBlack: #1d2021;
-    --beige: #f9f5d7;
-    --darkBeige: #ebdbb2;
-	--light-green: #8EC07C;
-    --green: #b8bb26;
-    --red: #cc241d;
+	--black: #282828;
+	--darkBlack: #1d2021;
+	--beige: #f9f5d7;
+	--darkBeige: #ebdbb2;
+	--light-green: #8ec07c;
+	--green: #b8bb26;
+	--red: #cc241d;
 }
 
 body {
-    background-color: var(--black);
-    color: var(--beige);
+	background-color: var(--black);
+	color: var(--beige);
 }
 
 a,
 a:visited {
-    color: var(--beige);
+	color: var(--beige);
 }
 
 .container {
-    max-width: 800px;
-    margin: 0 auto;
+	max-width: 800px;
+	margin: 0 auto;
 
-    display: flex;
-    flex-flow: column nowrap;
+	display: flex;
+	flex-flow: column nowrap;
 
-    padding: 0;
+	padding: .5rem .5rem 0 .5rem;
 }
 
 .pageTitle {
-    margin-bottom: 0;
+	margin-bottom: 0;
 }
 
 .load-more-items,
 .clear-items {
-    margin: 1rem 0 0 0;
+	margin: 1rem 0 0 0;
 
-    font-weight: bolder;
-    cursor: pointer;
-    color: var(--green);
+	font-weight: bolder;
+	cursor: pointer;
+	color: var(--green);
 }
 
 .clear-items {
-    margin: 0;
-    color: var(--red);
+	margin: 0;
+	color: var(--red) !important;
 }
 
-.saveText {
+.saveText,
+.removeText {
 	list-style: armenian;
 	color: var(--light-green);
 	font-weight: bolder;
@@ -54,25 +55,33 @@ a:visited {
 
 .load-more-items-hidden,
 .clear-items-hidden {
-    visibility: hidden;
+	visibility: hidden;
 }
 
 .hidden-page {
-    display: none !important;
+	display: none !important;
 }
 
 .searchContainer {
-    display: flex;
-    flex-flow: column nowrap;
+	display: flex;
+	flex-flow: column nowrap;
 }
 
 #item-name {
-    outline: none;
-    border: none;
+	outline: none;
+	border: none;
 
-    background-color: var(--darkBlack);
-    color: var(--darkBeige);
+	background-color: var(--darkBlack);
+	color: var(--darkBeige);
 
-    padding: 0.6rem;
-    font-size: 0.9rem;
+	padding: 0.6rem;
+	font-size: 0.9rem;
+}
+
+.crafting-list-title {
+	margin: 0 0 0.2rem 0;
+}
+
+.saved-items {
+	margin: 1rem 0 0 0;
 }

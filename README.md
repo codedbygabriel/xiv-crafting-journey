@@ -8,7 +8,7 @@
 
 - [x] Item Search;
 - [x] Material Items (If Item's Craftable);
-- [ ] Save Item for later search;
+- [x] Save Item for later search;
 - [ ] Summarize it all into a simple spreadcheet / text. 
 
 ## Well deserved credits!
