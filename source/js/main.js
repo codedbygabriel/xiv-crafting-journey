@@ -143,7 +143,6 @@ async function handleRecipeID(item, section) {
 	saveText.textContent = '[SAVE]';
 
 	saveText.addEventListener('click', e => {
-		console.log(item, recipes);
 		saveItem(item, recipes)
 	})
 
@@ -172,22 +171,27 @@ function loadItems() {
 	return data;
 }
 
-function paintSavedItemsOnScreen(arrayOfItems) {
-	if (!(arrayOfItems.length >= 1))
+function paintSavedItemsOnScreen(data) {
+	if (!(data.length >= 1))
 		console.warn('LOG = NO ITEMS SAVED AT LOCALSTORAGE, SKIPPING PAINTING PHASE.');
 
-	console.log(arrayOfItems);
-	// items.results.forEach((item) => {
-	// 	const itemDetails = document.createElement("details");
-	// 	const itemName = document.createElement("summary");
-	//
-	// 	itemName.textContent = `${item.fields.Name} (${item.row_id})`;
-	//
-	// 	itemDetails.appendChild(itemName);
-	// 	pagination.appendChild(itemDetails);
-	//
-	// 	itemDetails.addEventListener("toggle", (e) => handleRecipeID(item, itemDetails));
-	// });
+	console.log(data);
+
+	const container = document.querySelector('.saved-items');
+	// if (container.childNodes.length >= 1) {} 
+	
+	data.forEach(_ => {
+
+		const itemDetails = document.createElement("details");
+		const itemName = document.createElement("summary");
+
+		itemName.textContent = `${_.item.fields.Name} (${_.item.row_id})`;
+
+		itemDetails.appendChild(itemName);
+		container.appendChild(itemDetails);
+
+		// itemDetails.addEventListener("toggle", (e) => handleRecipeID(item, itemDetails));
+	});
 }
 
 async function gatherRecipe(RECIPE_ID) {
