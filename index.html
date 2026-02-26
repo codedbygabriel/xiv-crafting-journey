@@ -1,34 +1,44 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="./source/css/main.css">
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="stylesheet" href="./source/css/main.css" />
 	<title>XIV Crafting Journey</title>
 </head>
 
 <body>
 	<main class="container">
-		<header >
-				<h1 class="pageTitle comic-relief-bold">XIV Crafting Journey!</h1>
-			<hr>
+		<header>
+			<h1 class="pageTitle comic-relief-bold">XIV Crafting Journey!</h1>
+			<nav>
+				<ul>
+					<li class="navbar-switcher">Switch Page</li>
+				</ul>
+			</nav>
+			<hr />
 		</header>
-		<section class="searchContainer">
-			<input id="item-name" type="text" name="item-name" maxlength="50" required placeholder="Item's Name!">
-			<small class="comic-relief-regular">Search and Results Powered by
-				<a href="https://v2.xivapi.com/" rel="noreffer">XIVAPI</a>
-			</small>
-		</section>
 
-		<section class="items-container"></section>
-		<div class="load-more-items load-more-items-hidden">
-			[Load More Items]
+		<div class="searchContainer page">
+			<section class="searchContainer">
+				<input id="item-name" type="text" name="item-name" maxlength="50" required placeholder="Item's Name!" />
+				<small class="comic-relief-regular">Search and Results Powered by
+					<a href="https://v2.xivapi.com/" rel="noreffer">XIVAPI</a>
+				</small>
+			</section>
+
+			<section class="items-container"></section>
+			<div class="load-more-items load-more-items-hidden">[Load More Items]</div>
+			<div class="clear-items clear-items-hidden">[Clear Current Search]</div>
 		</div>
-		<div class="clear-items clear-items-hidden">
-			[Clear Current Search]
+		<div class="page hidden-page">
+			<header>
+				<h2>Warrior of Light's Crafting List</h2>
+				<small>If they aren't here, have you forgot to save?</small>
+			</header>
+			<section class="saved-items"></section>
 		</div>
-		
 	</main>
 	<script src="./source/js/main.js" defer></script>
 </body>

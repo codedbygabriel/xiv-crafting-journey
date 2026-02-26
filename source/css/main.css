@@ -3,6 +3,7 @@
     --darkBlack: #1d2021;
     --beige: #f9f5d7;
     --darkBeige: #ebdbb2;
+	--light-green: #8EC07C;
     --green: #b8bb26;
     --red: #cc241d;
 }
@@ -43,6 +44,12 @@ a:visited {
 .clear-items {
     margin: 0;
     color: var(--red);
+}
+
+.saveText {
+	list-style: armenian;
+	color: var(--light-green);
+	font-weight: bolder;
 }
 
 .load-more-items-hidden,

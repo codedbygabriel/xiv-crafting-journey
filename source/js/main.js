@@ -12,6 +12,7 @@ function initialize() {
 	const loadMoreItems = document.querySelector(".load-more-items");
 	const clearItems = document.querySelector(".clear-items");
 	const switchPage = document.querySelector(".navbar-switcher");
+	const savedItems = [];
 
 	loadMoreItems.addEventListener("click", (event) => {
 		searchBarEvent(searchState, loadMoreItems, clearItems);
@@ -30,11 +31,13 @@ function initialize() {
 	});
 
 	switchPage.addEventListener("click", (event) => switchPageEvent());
+
 }
 
 function switchPageEvent() {
 	const pages = document.querySelectorAll('.page');
 	pages.forEach(page => page.classList.toggle('hidden-page'));
+	
 }
 
 async function searchBarEvent(searchState, loadMore, clearItems) {
@@ -134,7 +137,57 @@ async function handleRecipeID(item, section) {
 		list.append(item);
 	});
 
+	// Save button!
+	const saveText = document.createElement('li');
+	saveText.classList.add('saveText');
+	saveText.textContent = '[SAVE]';
+
+	saveText.addEventListener('click', e => {
+		console.log(item, recipes);
+		saveItem(item, recipes)
+	})
+
+	list.append(saveText);
 	section.append(list);
+}
+
+function saveItem(item, recipes){
+	const KEY = 'xiv_items';
+	const data = JSON.parse(localStorage.getItem(KEY)) || [];
+
+	data.push({item, recipes});
+	const LS_DATA = JSON.stringify(data);
+
+	localStorage.setItem(KEY, LS_DATA);
+	return true;
+}
+
+function loadItems() {
+	const KEY = 'xiv_items';
+	const data = JSON.parse(localStorage.getItem(KEY)) || [];
+
+	if(data.length <= 0)
+		return false;
+
+	return data;
+}
+
+function paintSavedItemsOnScreen(arrayOfItems) {
+	if (!(arrayOfItems.length >= 1))
+		console.warn('LOG = NO ITEMS SAVED AT LOCALSTORAGE, SKIPPING PAINTING PHASE.');
+
+	console.log(arrayOfItems);
+	// items.results.forEach((item) => {
+	// 	const itemDetails = document.createElement("details");
+	// 	const itemName = document.createElement("summary");
+	//
+	// 	itemName.textContent = `${item.fields.Name} (${item.row_id})`;
+	//
+	// 	itemDetails.appendChild(itemName);
+	// 	pagination.appendChild(itemDetails);
+	//
+	// 	itemDetails.addEventListener("toggle", (e) => handleRecipeID(item, itemDetails));
+	// });
 }
 
 async function gatherRecipe(RECIPE_ID) {
@@ -159,5 +212,7 @@ async function gatherRecipe(RECIPE_ID) {
 }
 
 (function() {
+	loadItems();
 	initialize();
+	paintSavedItemsOnScreen(loadItems());
 })();
