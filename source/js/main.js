@@ -11,12 +11,13 @@ function initialize() {
 	const searchBar = document.querySelector("#item-name");
 	const loadMoreItems = document.querySelector(".load-more-items");
 	const clearItems = document.querySelector(".clear-items");
+	const switchPage = document.querySelector(".navbar-switcher");
 
-	loadMoreItems.addEventListener("click", (e) => {
+	loadMoreItems.addEventListener("click", (event) => {
 		searchBarEvent(searchState, loadMoreItems, clearItems);
 	});
 
-	clearItems.addEventListener("click", (e) => {
+	clearItems.addEventListener("click", (event) => {
 		clearSearch(searchState, loadMoreItems, true);
 	});
 
@@ -27,14 +28,18 @@ function initialize() {
 			searchBarEvent(searchState, loadMoreItems, clearItems);
 		}
 	});
+
+	switchPage.addEventListener("click", (event) => switchPageEvent());
+}
+
+function switchPageEvent() {
+	const pages = document.querySelectorAll('.page');
+	pages.forEach(page => page.classList.toggle('hidden-page'));
 }
 
 async function searchBarEvent(searchState, loadMore, clearItems) {
 	if (!searchState.item) return false;
-	if (
-		searchState.currentSearch &&
-		searchState.item !== searchState.currentSearch
-	) {
+	if (searchState.currentSearch && searchState.item !== searchState.currentSearch) {
 		searchState.pointer = false;
 		searchState.oldPointer = false;
 		searchState.paging = false;
@@ -97,8 +102,7 @@ function paintItemsOnScreen(items) {
 		itemDetails.appendChild(itemName);
 		pagination.appendChild(itemDetails);
 
-		itemDetails.addEventListener('toggle', e => handleRecipeID(item, itemDetails));
-		
+		itemDetails.addEventListener("toggle", (e) => handleRecipeID(item, itemDetails));
 	});
 
 	document.querySelector(".items-container").appendChild(hr);
@@ -108,8 +112,7 @@ function paintItemsOnScreen(items) {
 
 async function handleRecipeID(item, section) {
 	if (!section.open) return false;
-	if(Array.from(section.childNodes).find(el => el.tagName === "UL"))
-		return false;
+	if (Array.from(section.childNodes).find((el) => el.tagName === "UL")) return false;
 
 	const BASE_URL = `https://v2.xivapi.com/api/search?sheets=Recipe&query=ItemResult=${item.row_id}`;
 	const _fetchRecipeID = await fetch(BASE_URL);
@@ -121,15 +124,15 @@ async function handleRecipeID(item, section) {
 	if (!fetchRecipeID.results.length >= 1) return false;
 
 	const RECIPE_ID = fetchRecipeID.results[0].row_id;
-	const recipes =	await gatherRecipe(RECIPE_ID);
+	const recipes = await gatherRecipe(RECIPE_ID);
 
 	// Creating Elements
-	const list = document.createElement('ul');
-	recipes.forEach(recipe => {
-		const item = document.createElement('li');
-		item.textContent = `${recipe.qnt}x\t\t${recipe.ing.fields.Name}`
+	const list = document.createElement("ul");
+	recipes.forEach((recipe) => {
+		const item = document.createElement("li");
+		item.textContent = `${recipe.qnt}x\t\t${recipe.ing.fields.Name}`;
 		list.append(item);
-	})
+	});
 
 	section.append(list);
 }
@@ -143,14 +146,13 @@ async function gatherRecipe(RECIPE_ID) {
 	const recipe = await _fetchRecipe.json();
 	const recipeElements = [];
 
-	for(let index = 0; index < recipe.fields.AmountIngredient.length; index++){
-		if (!recipe.fields.AmountIngredient[index] >= 1)
-			continue;
+	for (let index = 0; index < recipe.fields.AmountIngredient.length; index++) {
+		if (!recipe.fields.AmountIngredient[index] >= 1) continue;
 
 		recipeElements.push({
 			qnt: recipe.fields.AmountIngredient[index],
-			ing: recipe.fields.Ingredient[index]
-		})
+			ing: recipe.fields.Ingredient[index],
+		});
 	}
 
 	return recipeElements;
