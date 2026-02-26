@@ -148,6 +148,14 @@ async function handleRecipeID(item, section) {
 	section.append(list);
 }
 
+function updateStorage(data) {
+	const KEY = "xiv_items";
+	const DATA = JSON.stringify(data);
+
+	localStorage.setItem(KEY, DATA);
+	return true;
+}
+
 function saveItem(item, recipes) {
 	const KEY = "xiv_items";
 	const data = JSON.parse(localStorage.getItem(KEY)) || [];
@@ -168,12 +176,11 @@ function loadItems() {
 	return data;
 }
 
-function paintSavedItemsOnScreen(data) {
+function paintSavedItemsOnScreen(data, firstRun = false) {
 	if (!(data.length >= 1)) console.warn("LOG = NO ITEMS SAVED AT LOCALSTORAGE, SKIPPING PAINTING PHASE.");
 
-	console.log(data);
-
 	const container = document.querySelector(".saved-items");
+	if (!firstRun) container.innerHTML = "";
 
 	data.forEach((_) => {
 		const itemDetails = document.createElement("details");
@@ -185,19 +192,37 @@ function paintSavedItemsOnScreen(data) {
 		itemDetails.appendChild(itemName);
 
 		itemDetails.addEventListener("toggle", (event) => {
-			if(list.childNodes.length >= 1)
-				return false;
+			if (list.childNodes.length >= 1) return false;
 
 			_.recipes.forEach((recipe) => {
 				const item = document.createElement("li");
 				item.textContent = `${recipe.qnt}x\t\t${recipe.ing.fields.Name}`;
 				list.append(item);
 			});
+
+			const removeText = document.createElement("li");
+			removeText.textContent = `[DELETE]`;
+			removeText.classList.add("clear-items");
+			removeText.classList.add("removeText");
+
+			removeText.addEventListener("click", (event) => removeSavedItem(_));
+			list.append(removeText);
 		});
 
 		itemDetails.appendChild(list);
 		container.appendChild(itemDetails);
 	});
+}
+
+function removeSavedItem(item) {
+	const currentData = loadItems();
+
+	if (currentData.length <= 0) return false;
+
+	const newData = currentData.filter((cur) => cur.item.fields.Name !== item.item.fields.Name);
+
+	updateStorage(newData);
+	paintSavedItemsOnScreen(loadItems());
 }
 
 async function gatherRecipe(RECIPE_ID) {
@@ -224,5 +249,5 @@ async function gatherRecipe(RECIPE_ID) {
 (function() {
 	loadItems();
 	initialize();
-	paintSavedItemsOnScreen(loadItems());
+	paintSavedItemsOnScreen(loadItems(), true);
 })();
