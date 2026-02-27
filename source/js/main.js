@@ -12,7 +12,7 @@ function initialize() {
 	const loadMoreItems = document.querySelector(".load-more-items");
 	const clearItems = document.querySelector(".clear-items");
 	const switchPage = document.querySelector(".navbar-switcher");
-	const savedItems = [];
+	const copyToClipboard = document.querySelector(".save-to-clipboard");
 
 	loadMoreItems.addEventListener("click", (event) => {
 		searchBarEvent(searchState, loadMoreItems, clearItems);
@@ -29,6 +29,8 @@ function initialize() {
 			searchBarEvent(searchState, loadMoreItems, clearItems);
 		}
 	});
+
+	copyToClipboard.addEventListener("click", (event) => copyItemsToClipboard());
 
 	switchPage.addEventListener("click", (event) => switchPageEvent());
 }
@@ -182,7 +184,6 @@ function paintSavedItemsOnScreen(data, firstRun = false) {
 	const container = document.querySelector(".saved-items");
 	if (!firstRun) container.innerHTML = "";
 
-	console.log(data, "kkkkk");
 	data.forEach((_) => {
 		const itemDetails = document.createElement("details");
 		const itemName = document.createElement("summary");
@@ -224,6 +225,28 @@ function removeSavedItem(item) {
 
 	updateStorage(newData);
 	paintSavedItemsOnScreen(loadItems());
+}
+
+function copyItemsToClipboard() { 
+	console.warn('WIP: copying to clipboard');
+
+	let string = '';
+	const data = loadItems();
+
+	data.forEach(cur => {
+
+		string += `${cur.item.fields.Name} (${cur.item.row_id})\n`;
+		cur.recipes.forEach((recipe) => {
+			string += `\n${recipe.qnt}x\t\t${recipe.ing.fields.Name}`;
+		});
+		string += '\n\n';
+	})
+
+	try {
+		navigator.clipboard.writeText(string);
+	} catch (error) {
+		console.error("An error occured during copying to clipboard,", error);
+	}
 }
 
 async function gatherRecipe(RECIPE_ID) {
