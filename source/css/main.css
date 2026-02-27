@@ -25,7 +25,7 @@ a:visited {
 	display: flex;
 	flex-flow: column nowrap;
 
-	padding: .5rem .5rem 0 .5rem;
+	padding: 0.5rem 0.5rem 0 0.5rem;
 }
 
 .pageTitle {
@@ -47,10 +47,15 @@ a:visited {
 }
 
 .saveText,
-.removeText {
+.removeText,
+.save-to-clipboard {
 	list-style: armenian;
 	color: var(--light-green);
 	font-weight: bolder;
+}
+
+.save-to-clipboard {
+	cursor: pointer;
 }
 
 .load-more-items-hidden,
