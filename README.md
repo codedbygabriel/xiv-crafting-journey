@@ -14,3 +14,8 @@
 ## Well deserved credits!
 
 Although this project will be coded by [@codedbygabriel](https://github.com/codedbygabriel)... This would not be possible without the proper API from [xivapi](https://v2.xivapi.com/). Shout out to them! 
+
+## Usage
+
+1. Access the website [xiv-crafting-journey](https://codedbygabriel.github.io/xiv-crafting-journey/) 
+2. Search the item, add, switch page and copy to clipboard!
