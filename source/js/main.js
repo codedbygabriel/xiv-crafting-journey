@@ -163,6 +163,12 @@ function updateStorage(data) {
 function saveItem(item, recipes) {
 	const KEY = "xiv_items";
 	const data = JSON.parse(localStorage.getItem(KEY)) || [];
+	const saveCondition = data.filter((el) => el.item.fields.Name === item.fields.Name).length >= 1;
+
+	if (saveCondition) {
+		alert("Item already saved.");
+		return false;
+	}
 
 	data.push({ item, recipes });
 	const LS_DATA = JSON.stringify(data);
@@ -227,20 +233,19 @@ function removeSavedItem(item) {
 	paintSavedItemsOnScreen(loadItems());
 }
 
-function copyItemsToClipboard() { 
-	console.warn('WIP: copying to clipboard');
+function copyItemsToClipboard() {
+	console.warn("WIP: copying to clipboard");
 
-	let string = '';
+	let string = "";
 	const data = loadItems();
 
-	data.forEach(cur => {
-
+	data.forEach((cur) => {
 		string += `${cur.item.fields.Name} (${cur.item.row_id})\n`;
 		cur.recipes.forEach((recipe) => {
 			string += `\n${recipe.qnt}x\t\t${recipe.ing.fields.Name}`;
 		});
-		string += '\n\n';
-	})
+		string += "\n\n";
+	});
 
 	try {
 		navigator.clipboard.writeText(string);
